@@ -1,426 +1,631 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080808">
-<title>ViveX Sensi</title>
+<title>ViveX Sensi BOT</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <style>
-:root {
-  --red:#ff2020;
-  --bg:#080808;
-  --panel:#121212;
-  --line:#451414;
-  --text:#f5eeee;
-  --muted:#aaa;
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080808;color:#fff;font-family:Arial,sans-serif}
+:root{--red:#f01828;--panel:#141414;--line:#292929}
+.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:85px}
+header{
+ height:65px;padding:0 18px;display:flex;align-items:center;
+ justify-content:space-between;background:#101010;
+ border-bottom:1px solid #292929;position:sticky;top:0;z-index:5
 }
-*{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:'Rajdhani',sans-serif;
-  background-image:radial-gradient(ellipse at top,#260707,#080808 60%);
+.logo{font-size:18px;font-weight:900}
+.logo span{color:var(--red)}
+.profile{
+ width:40px;height:40px;border-radius:50%;background:#211214;
+ color:white;border:1px solid #70232b;font-size:19px;cursor:pointer;
+ overflow:hidden
 }
+.profile img{width:100%;height:100%;object-fit:cover}
+main{padding:20px 16px}
+.page{display:none}
+.page.active{display:block}
+.eyebrow{color:var(--red);font-size:10px;letter-spacing:2px;font-weight:bold}
+h1{font-size:27px;margin:9px 0}
+.desc{color:#999;font-size:13px;line-height:1.5}
+.hero{
+ margin:20px 0;padding:20px;border:1px solid #572027;
+ border-radius:17px;background:linear-gradient(135deg,#281014,#111)
+}
+.hero h2{font-size:19px;margin:12px 0 7px}
+.pill{
+ display:inline-block;background:#39151b;color:#ff6874;
+ padding:6px 10px;border-radius:20px;font-size:10px;font-weight:bold
+}
+.section{
+ display:flex;justify-content:space-between;align-items:center;
+ margin:23px 2px 12px
+}
+.section h3{font-size:15px}
+.muted{color:#888;font-size:11px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat,.card{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:14px;padding:15px
+}
+.stat label{display:block;color:#999;font-size:11px;margin-bottom:10px}
+.stat strong{font-size:25px}
+.stat small{color:var(--red);font-size:10px}
+.setting{
+ display:flex;justify-content:space-between;align-items:center;padding:7px 0
+}
+.setting+.setting{border-top:1px solid #303030;margin-top:10px;padding-top:15px}
+.setting b{font-size:13px}
+.value{color:#ff5965;font-weight:bold}
+.btn{
+ border:0;border-radius:10px;padding:12px 17px;
+ font-weight:bold;font-size:12px;cursor:pointer
+}
+.red{background:var(--red);color:white}
+.dark{background:#251316;color:#ff6874;border:1px solid #64232c}
+.wide{width:100%;margin-top:13px}
+.card{margin-bottom:12px}
+.tag{
+ font-size:9px;font-weight:bold;color:#85d99b;
+ background:#19291d;padding:6px 9px;border-radius:20px
+}
+.tag.pro{color:#ff6874;background:#35151a}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lock{text-align:center;padding:35px 15px}
+.lock-icon{font-size:32px;margin-bottom:15px}
+.lock h2{font-size:20px;margin-bottom:9px}
+.lock p{color:#999;font-size:12px;line-height:1.6;margin-bottom:18px}
+.bottom{
+ position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+ width:min(100%,520px);height:75px;background:#111;
+ border-top:1px solid #292929;display:grid;
+ grid-template-columns:repeat(3,1fr);padding:7px 10px;z-index:10
+}
+.tab{
+ background:none;border:0;color:#777;display:flex;
+ flex-direction:column;align-items:center;justify-content:center;
+ gap:6px;font-size:11px;cursor:pointer
+}
+.tab .ico{font-size:21px}
+.tab.active{color:#ff4b57}
+.modal{
+ display:none;position:fixed;inset:0;background:#000c;z-index:20;
+ align-items:flex-end;justify-content:center;padding:12px
+}
+.modal.show{display:flex}
+.modal-box{
+ background:#171717;border:1px solid #61232c;border-radius:18px;
+ padding:20px;width:100%;max-width:490px;max-height:85vh;overflow:auto
+}
+.modal-head{
+ display:flex;justify-content:space-between;align-items:center;margin-bottom:15px
+}
+.close{background:#333;color:white;border:0;padding:7px 11px;border-radius:8px}
+input{
+ display:block;width:100%;padding:13px;margin:9px 0;background:#090909;
+ border:1px solid #383838;border-radius:9px;color:white
+}
+.note{font-size:10px;color:#888;margin-top:12px;line-height:1.5}
+.google-area{display:flex;justify-content:center;margin-top:18px;min-height:44px}
+.user-info{
+ display:flex;align-items:center;gap:12px;padding:13px;
+ background:#101010;border:1px solid #333;border-radius:12px;margin-top:15px
+}
+.user-info img{width:45px;height:45px;border-radius:50%;object-fit:cover}
+.user-info p{font-size:12px;color:#aaa;margin-top:5px;word-break:break-all}
+.status{font-size:11px;color:#ff6874;margin-top:12px;line-height:1.5}
 .hidden{display:none!important}
-button{font:inherit;cursor:pointer}
-.screen{min-height:100vh;display:grid;place-items:center;padding:20px}
-.login-card{
-  width:min(100%,400px);padding:32px 22px;text-align:center;
-  background:var(--panel);border:1px solid var(--line);
-  border-radius:16px;
-}
-.brand{font:800 34px Orbitron}
-.brand span{color:var(--red)}
-.sub{font:600 11px Orbitron;letter-spacing:4px;margin:12px 0 25px}
-.muted{color:var(--muted)}
-#googleButton{display:flex;justify-content:center;margin:25px 0}
-.status{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
-.app{max-width:1050px;margin:auto;padding:15px}
-.topbar{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:12px;padding:15px;background:#100d0d;
-  border:1px solid var(--line);border-radius:12px;
-}
-.smallbrand{font:700 18px Orbitron}
-.smallbrand span{color:var(--red)}
-.user{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
-.nav{display:flex;gap:8px;overflow-x:auto;padding:15px 0}
-.nav button,.secondary,.primary{
-  padding:10px 16px;border-radius:8px;
-  border:1px solid var(--line);background:#151010;color:white;
-  font-weight:700;white-space:nowrap;
-}
-.nav button.active,.primary{background:var(--red);border-color:var(--red)}
-.hero,.panel{
-  padding:22px;background:#121010;
-  border:1px solid var(--line);border-radius:12px;margin-bottom:14px;
-}
-.eyebrow{font:600 11px Orbitron;color:var(--red);letter-spacing:2px}
-h1,h2,h3{font-family:Orbitron}
-h1{font-size:clamp(22px,5vw,30px)}
-h2{font-size:17px}
-p{color:#bbb;line-height:1.5}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.badge{
-  display:inline-block;padding:6px 12px;border:1px solid #315b3d;
-  color:#70d995;border-radius:20px;font-size:13px
-}
-.price{font:700 26px Orbitron;color:var(--red)}
-.plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
-.circle-area{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:18px 0}
-.circle{
-  aspect-ratio:1;border-radius:50%;border:1px solid #552020;
-  background:#211111;color:white;font-weight:700
-}
-.circle.hit{background:#28643d;border-color:#62d58a}
-.footer{text-align:center;color:#666;padding:25px}
-.tool-button{width:100%;margin-top:10px}
-@media(max-width:600px){
-  .grid,.plans{grid-template-columns:1fr}
-  .topbar{align-items:flex-start;flex-direction:column}
-  .hero,.panel{padding:17px}
-}
 </style>
 </head>
 
 <body>
+<div class="app">
 
-<!-- LOGIN -->
-<section id="loginScreen" class="screen">
-  <div class="login-card">
-    <div class="brand">ViveX <span>Sensi</span></div>
-    <div class="sub">PRECISION • CONTROL</div>
-    <p class="muted">Sign in with your Google account</p>
-    <div id="googleButton"></div>
-    <div id="loginStatus" class="status">Loading Google Login...</div>
-  </div>
+<header>
+ <div class="logo">ViveX <span>Sensi BOT</span></div>
+ <button class="profile" id="profileButton" onclick="openModal('profile')">♙</button>
+</header>
+
+<main>
+
+<section class="page active" id="home">
+ <div class="eyebrow">YOUR PERSONAL SETUP</div>
+ <h1>Welcome to ViveX.</h1>
+ <p class="desc">My personal Free Fire sensitivity settings.</p>
+
+ <div class="hero">
+  <span class="pill">MY SENSITIVITY</span>
+  <h2>My Custom Settings</h2>
+  <p class="desc">The settings I currently use in-game.</p>
+ </div>
+
+ <div class="section">
+  <h3>Sensitivity Settings</h3>
+  <span class="muted">Out of 200</span>
+ </div>
+
+ <div class="grid">
+  <div class="stat"><label>General</label><strong>154</strong> <small>/200</small></div>
+  <div class="stat"><label>Red Dot</label><strong>67</strong> <small>/200</small></div>
+  <div class="stat"><label>2x Scope</label><strong>193</strong> <small>/200</small></div>
+  <div class="stat"><label>4x Scope</label><strong>197</strong> <small>/200</small></div>
+ </div>
+
+ <div class="section"><h3>Device Settings</h3></div>
+ <div class="card">
+  <div class="setting"><b>DPI</b><span class="value">473</span></div>
+  <div class="setting"><b>Fire Button</b><span class="value">10%</span></div>
+ </div>
+ <p class="note">These are prototype values. You can replace them with your final settings.</p>
 </section>
 
-<!-- MAIN WEBSITE -->
-<main id="appScreen" class="app hidden">
+<section class="page" id="bot">
+ <div class="eyebrow">SMART ASSISTANT</div>
+ <h1>Sensi BOT</h1>
+ <p class="desc">Generate your personalized sensitivity setup.</p>
 
-  <header class="topbar">
-    <div class="smallbrand">ViveX <span>Sensi</span></div>
-    <div class="user">
-      <span id="userEmail"></span>
-      <button class="secondary" onclick="logout()">Logout</button>
-    </div>
-  </header>
+ <div class="card lock" id="botLock" style="margin-top:25px">
+  <div class="lock-icon">🔒</div>
+  <h2>Unlock Sensi BOT</h2>
+  <p>This feature is available for members only. Activate a membership to access Sensi BOT.</p>
+  <button class="btn red" onclick="openModal('membership')">Explore Membership</button>
+ </div>
 
-  <nav class="nav">
-    <button class="active" onclick="openPage('home',this)">Home</button>
-    <button onclick="openPage('bot',this)">Sensi BOT</button>
-    <button onclick="openPage('tricks',this)">Tricks</button>
-    <button onclick="openPage('settings',this)">Settings</button>
-  </nav>
+ <div class="card hidden" id="botUnlocked">
+  <div class="row"><b>Sensi BOT Access</b><span class="tag">ACTIVE</span></div>
+  <p class="note">Membership verified. Advanced Sensi BOT functionality will be added later.</p>
+ </div>
 
-  <!-- HOME -->
-  <section id="homePage" class="page">
-    <div class="hero">
-      <div class="eyebrow">MEMBER DASHBOARD</div>
-      <h1>Welcome to ViveX Sensi</h1>
-      <p>Your control centre for sensitivity guides, practice tools and updates.</p>
-    </div>
+ <div class="card">
+  <div class="row">
+   <b>Personalized Sensitivity</b>
+   <span class="tag pro">PREMIUM</span>
+  </div>
+ </div>
+</section>
 
-    <div class="grid">
-      <div class="panel">
-        <div class="eyebrow">MEMBERSHIP</div>
-        <h2>Access Status</h2>
-        <div id="membershipBadge" class="badge">Checking...</div>
-        <p id="membershipInfo">Verifying membership...</p>
-      </div>
+<section class="page" id="tricks">
+ <div class="eyebrow">LEARN & IMPROVE</div>
+ <h1>Tricks</h1>
+ <p class="desc">Gameplay tips and techniques.</p>
 
-      <div class="panel">
-        <div class="eyebrow">QUICK ACCESS</div>
-        <h2>Performance Lab</h2>
-        <p>Practice reaction speed and explore training tools.</p>
-        <button class="primary" onclick="openPage('settings')">Open Settings</button>
-      </div>
-    </div>
-  </section>
+ <div class="section"><h3>Free Tricks</h3><span class="muted">FREE ACCESS</span></div>
 
-  <!-- BOT -->
-  <section id="botPage" class="page hidden">
-    <div class="hero">
-      <div class="eyebrow">SENSI BOT</div>
-      <h1>Smart Sensi Generator</h1>
-      <p>Personalized sensitivity suggestions are being prepared.</p>
-    </div>
-    <div class="panel">
-      <h2>Coming Soon</h2>
-      <p>The generator will be connected in a future update.</p>
-    </div>
-  </section>
+ <div class="card">
+  <div class="row"><b>Basic HUD Tips</b><span class="tag">FREE</span></div>
+  <p class="note">Learn about organizing your controls.</p>
+ </div>
 
-  <!-- TRICKS -->
-  <section id="tricksPage" class="page hidden">
-    <div class="hero">
-      <div class="eyebrow">TIPS & GUIDES</div>
-      <h1>Tricks</h1>
-      <p>Helpful guides and feature updates.</p>
-    </div>
-    <div class="panel">
-      <h2>In-Game Tricks</h2>
-      <p>New tricks are being prepared.</p>
-      <button class="secondary" disabled>Coming Soon</button>
-    </div>
-  </section>
+ <div class="card">
+  <div class="row"><b>Aim Practice Routine</b><span class="tag">FREE</span></div>
+  <p class="note">Practice habits for better control.</p>
+ </div>
 
-  <!-- SETTINGS -->
-  <section id="settingsPage" class="page hidden">
-    <div class="hero">
-      <div class="eyebrow">SETTINGS</div>
-      <h1>Account & Performance</h1>
-    </div>
+ <div class="section"><h3>Premium Tricks</h3><span class="muted">MEMBERS ONLY</span></div>
 
-    <div class="grid">
-      <div class="panel">
-        <h2>Account</h2>
-        <p id="accountEmail"></p>
-        <div class="badge">Access Verified</div>
-        <button class="secondary tool-button" onclick="logout()">Logout</button>
-      </div>
+ <div class="card" id="premiumTrick1">
+  <div class="row"><b>Advanced HUD Guide</b><span class="tag pro">LOCKED</span></div>
+  <button class="btn dark wide" onclick="openModal('membership')">Unlock</button>
+ </div>
 
-      <div class="panel">
-        <h2>Performance Lab</h2>
-        <p>Tap all 10 circles after the countdown.</p>
-        <div id="reactionState">Ready when you are</div>
-        <div id="reactionTime" class="price">--</div>
-        <div id="circleArea" class="circle-area"></div>
-        <button id="startReaction" class="primary tool-button" onclick="startReaction()">Start 3-second test</button>
-      </div>
-    </div>
-  </section>
+ <div class="card" id="premiumTrick2">
+  <div class="row"><b>Advanced Gameplay Tips</b><span class="tag pro">LOCKED</span></div>
+  <button class="btn dark wide" onclick="openModal('membership')">Unlock</button>
+ </div>
+</section>
 
-  <div class="footer">ViveX Sensi • Version 1.0</div>
 </main>
 
-<!-- MEMBERSHIP REQUIRED -->
-<section id="lockedScreen" class="screen hidden">
-  <div class="login-card">
-    <div class="brand">ViveX <span>Sensi</span></div>
-    <h2>Membership Required</h2>
-    <p class="muted">No active membership found for your account.</p>
+<nav class="bottom">
+ <button class="tab active" onclick="switchPage('home',this)">
+  <span class="ico">⌂</span>Home
+ </button>
+ <button class="tab" onclick="switchPage('bot',this)">
+  <span class="ico">◉</span>Sensi BOT
+ </button>
+ <button class="tab" onclick="switchPage('tricks',this)">
+  <span class="ico">✦</span>Tricks
+ </button>
+</nav>
+</div>
 
-    <div class="plans">
-      <div class="panel">
-        <h3>MONTHLY</h3>
-        <div class="price">₹49</div>
-        <p>30 Days</p>
-      </div>
-      <div class="panel">
-        <h3>LIFETIME</h3>
-        <div class="price">₹99</div>
-        <p>Lifetime Access</p>
-      </div>
-    </div>
-
-    <p>Payment portal is being prepared. Do not pay until the official payment page is available.</p>
-    <p id="lockedStatus" class="status"></p>
-    <button class="secondary" onclick="logout()">Logout</button>
+<!-- PROFILE MODAL -->
+<div class="modal" id="profile">
+ <div class="modal-box">
+  <div class="modal-head">
+   <h2>Your Profile</h2>
+   <button class="close" onclick="closeModal('profile')">✕</button>
   </div>
-</section>
+
+  <div id="loggedOutView">
+   <p class="desc">Sign in with Google to manage your account and membership.</p>
+   <div class="google-area" id="googleButton"></div>
+   <p class="note">Your Google ID token is verified by the ViveX backend.</p>
+  </div>
+
+  <div id="loggedInView" class="hidden">
+   <div class="user-info">
+    <img id="userPhoto" alt="Profile photo">
+    <div>
+     <b id="userName">User</b>
+     <p id="userEmail"></p>
+    </div>
+   </div>
+
+   <div class="card" style="margin-top:15px">
+    <div class="row">
+     <b>Membership</b>
+     <span class="tag" id="membershipTag">FREE</span>
+    </div>
+    <p class="note" id="membershipInfo">No active membership.</p>
+   </div>
+
+   <button class="btn red wide" onclick="openModal('membership')">View Membership</button>
+   <button class="btn dark wide" onclick="logout()">Logout</button>
+  </div>
+
+  <p class="status" id="loginStatus"></p>
+ </div>
+</div>
+
+<!-- MEMBERSHIP MODAL -->
+<div class="modal" id="membership">
+ <div class="modal-box">
+  <div class="modal-head">
+   <h2>ViveX Membership</h2>
+   <button class="close" onclick="closeModal('membership')">✕</button>
+  </div>
+
+  <p class="desc">Membership unlocks all premium features.</p>
+
+  <div class="card" style="margin-top:15px">
+   <div class="row"><b>Sensi BOT Access</b><span class="tag pro">PRO</span></div>
+  </div>
+
+  <div class="card">
+   <div class="row"><b>Premium Tricks</b><span class="tag pro">PRO</span></div>
+  </div>
+
+  <div class="card">
+   <div class="row"><b>Your Membership</b><span class="tag" id="modalMembershipTag">FREE</span></div>
+   <p class="note" id="modalMembershipInfo">Login to check your membership.</p>
+  </div>
+
+  <button class="btn red wide" onclick="goToPayment()">Buy Membership</button>
+  <p class="note">Payment will be handled through the separate ViveX Payment Website.</p>
+ </div>
+</div>
 
 <script>
-/* CONFIGURATION */
-const GOOGLE_CLIENT_ID = "830557350336-o298m4pmuk7ts0ifp2ieeq468mddcqqs.apps.googleusercontent.com";
+/* ========== CONFIGURATION ========== */
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbxCCQWS8ADq-fDmTAqtbvGcAXWe8BZbqBroCwslkCW6yx4398KgHC4pSYLK6bZnszLPZg/exec";
+const CONFIG = {
+ BACKEND_URL: "https://script.google.com/macros/s/AKfycbxCCQWS8ADq-fDmTAqtbvGcAXWe8BZbqBroCwslkCW6yx4398KgHC4pSYLK6bZnszLPZg/exec",
 
-let idToken = "";
-let userEmail = "";
-let reactionStart = 0;
-let remaining = 0;
-let countdown = null;
+ GOOGLE_CLIENT_ID: "830557350336-o298m4pmuk7ts0ifp2ieeq468mddcqqs.apps.googleusercontent.com",
 
-const $ = id => document.getElementById(id);
+ // Add the Payment Website URL here when it is ready.
+ PAYMENT_URL: ""
+};
 
-/* BACKEND */
-async function callBackend(action) {
-  const response = await fetch(API_URL,{
-    method:"POST",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify({action,idToken})
-  });
+/* ========== APP STATE ========== */
 
-  if(!response.ok) throw new Error("Backend HTTP error");
-  return response.json();
+let idToken = sessionStorage.getItem("vivex_id_token") || "";
+let currentUser = null;
+let membership = {active:false};
+
+/* ========== BACKEND ========== */
+
+async function callBackend(action, extra = {}) {
+ if (!idToken) throw new Error("Please login first.");
+
+ const response = await fetch(CONFIG.BACKEND_URL, {
+  method: "POST",
+  headers: {
+   "Content-Type": "text/plain;charset=utf-8"
+  },
+  body: JSON.stringify({
+   action: action,
+   idToken: idToken,
+   ...extra
+  })
+ });
+
+ if (!response.ok) {
+  throw new Error("Backend request failed. HTTP " + response.status);
+ }
+
+ return await response.json();
 }
 
-/* GOOGLE LOGIN */
+/* ========== GOOGLE LOGIN ========== */
+
+function decodeGoogleToken(token) {
+ try {
+  const part = token.split(".")[1];
+  const base64 = part.replace(/-/g,"+").replace(/_/g,"/");
+  return JSON.parse(decodeURIComponent(
+   atob(base64).split("").map(c =>
+    "%" + c.charCodeAt(0).toString(16).padStart(2,"0")
+   ).join("")
+  ));
+ } catch(e) {
+  return null;
+ }
+}
+
 function initializeGoogleLogin() {
-  if(!window.google?.accounts?.id) {
-    $("loginStatus").textContent="Google Login is loading. Refresh the page.";
-    return;
+ if (!window.google || !google.accounts) return;
+
+ google.accounts.id.initialize({
+  client_id: CONFIG.GOOGLE_CLIENT_ID,
+  callback: handleGoogleLogin,
+  auto_select: false
+ });
+
+ google.accounts.id.renderButton(
+  document.getElementById("googleButton"),
+  {
+   theme: "filled_black",
+   size: "large",
+   shape: "rectangular",
+   text: "signin_with",
+   width: 260
+  }
+ );
+}
+
+async function handleGoogleLogin(response) {
+ const token = response.credential;
+ const payload = decodeGoogleToken(token);
+
+ if (!payload || !payload.email) {
+  showLoginStatus("Unable to read Google account details.");
+  return;
+ }
+
+ idToken = token;
+ currentUser = {
+  name: payload.name || "ViveX User",
+  email: payload.email,
+  picture: payload.picture || ""
+ };
+
+ sessionStorage.setItem("vivex_id_token", idToken);
+
+ updateProfileUI();
+ showLoginStatus("Google login successful. Checking membership...");
+
+ await refreshMembership();
+
+ closeModal("profile");
+}
+
+function showLoginStatus(message) {
+ document.getElementById("loginStatus").textContent = message;
+}
+
+/* ========== MEMBERSHIP ========== */
+
+async function refreshMembership() {
+ if (!idToken) return;
+
+ try {
+  const result = await callBackend("membership");
+
+  if (!result.success) {
+   throw new Error(result.message || "Membership check failed.");
   }
 
-  if(GOOGLE_CLIENT_ID.startsWith("YOUR_")) {
-    $("loginStatus").textContent="Add your OAuth Web Client ID in the code.";
-    return;
+  membership = {
+   active: result.active === true,
+   plan: result.plan || "",
+   expiry: result.expiry || null
+  };
+
+  updateMembershipUI();
+
+ } catch(error) {
+  membership = {active:false, error:true};
+  updateMembershipUI();
+  console.error("Membership error:",error);
+  alert("Membership could not be verified. Please try again.");
+ }
+}
+
+function updateMembershipUI() {
+ const active = membership.active === true;
+
+ document.getElementById("botLock").classList.toggle("hidden",active);
+ document.getElementById("botUnlocked").classList.toggle("hidden",!active);
+
+ ["premiumTrick1","premiumTrick2"].forEach(id => {
+  const card = document.getElementById(id);
+  const tag = card.querySelector(".tag");
+  const button = card.querySelector("button");
+
+  if (active) {
+   tag.textContent = "UNLOCKED";
+   tag.className = "tag";
+   button.classList.add("hidden");
+  } else {
+   tag.textContent = "LOCKED";
+   tag.className = "tag pro";
+   button.classList.remove("hidden");
   }
+ });
 
-  google.accounts.id.initialize({
-    client_id:GOOGLE_CLIENT_ID,
-    callback:handleLogin
-  });
+ const tag = active
+  ? (membership.plan || "ACTIVE").toUpperCase()
+  : "FREE";
 
-  google.accounts.id.renderButton($("googleButton"),{
-    theme:"filled_black",
-    size:"large",
-    shape:"rectangular",
-    text:"signin_with",
-    width:240
-  });
+ document.getElementById("membershipTag").textContent = tag;
+ document.getElementById("modalMembershipTag").textContent = tag;
 
-  $("loginStatus").textContent="Sign in with Google to continue.";
+ let info = "No active membership.";
+
+ if (active && membership.plan === "Lifetime") {
+  info = "Lifetime membership is active.";
+ } else if (active && membership.expiry) {
+  info = "Active until: " + new Date(membership.expiry).toLocaleDateString();
+ } else if (membership.error) {
+  info = "Membership verification unavailable.";
+ }
+
+ document.getElementById("membershipInfo").textContent = info;
+ document.getElementById("modalMembershipInfo").textContent = info;
 }
 
-async function handleLogin(response) {
-  idToken=response.credential;
-  $("loginStatus").textContent="Checking membership...";
+/* ========== PROFILE ========== */
 
-  try {
-    const result=await callBackend("membership");
+function updateProfileUI() {
+ const loggedIn = !!currentUser;
 
-    if(!result || !result.success) {
-      showLocked(result?.message || "Membership verification failed.");
-      return;
-    }
+ document.getElementById("loggedOutView").classList.toggle("hidden",loggedIn);
+ document.getElementById("loggedInView").classList.toggle("hidden",!loggedIn);
 
-    userEmail=result.email || "";
+ const button = document.getElementById("profileButton");
 
-    if(result.active) {
-      showApp(result);
-    } else {
-      showLocked("No active membership found for "+userEmail);
-    }
+ if (loggedIn) {
+  document.getElementById("userName").textContent = currentUser.name;
+  document.getElementById("userEmail").textContent = currentUser.email;
 
-  } catch(error) {
-    $("loginStatus").textContent="Backend error: "+error.message;
-  }
+  const photo = document.getElementById("userPhoto");
+  photo.src = currentUser.picture || "https://www.gravatar.com/avatar/?d=mp";
+
+  button.innerHTML = "";
+
+  const img = document.createElement("img");
+  img.src = currentUser.picture || "https://www.gravatar.com/avatar/?d=mp";
+  img.alt = "Profile";
+  button.appendChild(img);
+ } else {
+  button.textContent = "♙";
+ }
 }
 
-/* SCREENS */
-function showApp(membership) {
-  $("loginScreen").classList.add("hidden");
-  $("lockedScreen").classList.add("hidden");
-  $("appScreen").classList.remove("hidden");
-
-  $("userEmail").textContent=userEmail;
-  $("accountEmail").textContent=userEmail;
-
-  $("membershipBadge").textContent=
-    membership.plan==="Lifetime"?"LIFETIME ACTIVE":"ACTIVE";
-
-  $("membershipInfo").textContent=
-    membership.plan==="Lifetime"
-    ?"Your lifetime membership is active."
-    :"Your membership is active. Expiry: "+(membership.expiry || "Not provided");
-}
-
-function showLocked(message) {
-  $("loginScreen").classList.add("hidden");
-  $("appScreen").classList.add("hidden");
-  $("lockedScreen").classList.remove("hidden");
-  $("lockedStatus").textContent=message || "";
-}
+/* ========== LOGOUT ========== */
 
 function logout() {
-  idToken="";
-  userEmail="";
+ idToken = "";
+ currentUser = null;
+ membership = {active:false};
 
-  if(window.google?.accounts?.id) {
-    google.accounts.id.disableAutoSelect();
+ sessionStorage.removeItem("vivex_id_token");
+
+ if (window.google && google.accounts) {
+  google.accounts.id.disableAutoSelect();
+ }
+
+ updateProfileUI();
+ updateMembershipUI();
+ closeModal("profile");
+ closeModal("membership");
+}
+
+/* ========== PAYMENT ========== */
+
+function goToPayment() {
+ if (!currentUser) {
+  closeModal("membership");
+  openModal("profile");
+  showLoginStatus("Please login before purchasing membership.");
+  return;
+ }
+
+ if (membership.active) {
+  alert("Your membership is already active.");
+  return;
+ }
+
+ if (!CONFIG.PAYMENT_URL) {
+  alert("Payment Website is not connected yet. It will be added later.");
+  return;
+ }
+
+ window.location.href = CONFIG.PAYMENT_URL;
+}
+
+/* ========== NAVIGATION ========== */
+
+function switchPage(id,button) {
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ button.classList.add("active");
+
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function openModal(id) {
+ document.getElementById(id).classList.add("show");
+
+ if (id === "membership") {
+  updateMembershipUI();
+ }
+
+ if (id === "profile" && !currentUser) {
+  showLoginStatus("");
+ }
+}
+
+function closeModal(id) {
+ document.getElementById(id).classList.remove("show");
+}
+
+document.querySelectorAll(".modal").forEach(modal=>{
+ modal.addEventListener("click",e=>{
+  if(e.target===modal) modal.classList.remove("show");
+ });
+});
+
+/* ========== SESSION RESTORE ========== */
+
+async function restoreSession() {
+ if (!idToken) {
+  updateProfileUI();
+  updateMembershipUI();
+  return;
+ }
+
+ const payload = decodeGoogleToken(idToken);
+
+ if (!payload || !payload.exp || payload.exp * 1000 < Date.now()) {
+  logout();
+  return;
+ }
+
+ currentUser = {
+  name: payload.name || "ViveX User",
+  email: payload.email,
+  picture: payload.picture || ""
+ };
+
+ updateProfileUI();
+ await refreshMembership();
+}
+
+/* ========== STARTUP ========== */
+
+window.addEventListener("load", async () => {
+ updateProfileUI();
+ updateMembershipUI();
+ await restoreSession();
+
+ const waitForGoogle = setInterval(() => {
+  if (window.google && google.accounts) {
+   clearInterval(waitForGoogle);
+   initializeGoogleLogin();
   }
-
-  $("appScreen").classList.add("hidden");
-  $("lockedScreen").classList.add("hidden");
-  $("loginScreen").classList.remove("hidden");
-  $("loginStatus").textContent="Signed out.";
-}
-
-/* NAVIGATION */
-function openPage(page,button) {
-  document.querySelectorAll(".page").forEach(section=>{
-    section.classList.add("hidden");
-  });
-
-  $(page+"Page").classList.remove("hidden");
-
-  document.querySelectorAll(".nav button").forEach(btn=>{
-    btn.classList.remove("active");
-  });
-
-  if(button) button.classList.add("active");
-}
-
-/* REACTION TEST */
-function createCircles() {
-  $("circleArea").innerHTML="";
-
-  for(let i=0;i<10;i++) {
-    const circle=document.createElement("button");
-    circle.className="circle";
-    circle.textContent="TAP";
-    circle.type="button";
-    circle.onclick=()=>hitCircle(circle);
-    $("circleArea").appendChild(circle);
-  }
-}
-
-function hitCircle(circle) {
-  if(!reactionStart || circle.classList.contains("hit")) return;
-
-  circle.classList.add("hit");
-  circle.textContent="✓";
-  remaining--;
-
-  if(remaining===0) {
-    const elapsed=(performance.now()-reactionStart)/1000;
-
-    $("reactionTime").textContent=elapsed.toFixed(2)+"s";
-    $("reactionState").textContent="Test completed!";
-    reactionStart=0;
-    $("startReaction").disabled=false;
-    $("startReaction").textContent="Try Again";
-  }
-}
-
-function startReaction() {
-  clearInterval(countdown);
-  reactionStart=0;
-  remaining=10;
-
-  $("reactionTime").textContent="--";
-  $("startReaction").disabled=true;
-  createCircles();
-
-  let count=3;
-  $("reactionState").textContent="Starting in "+count;
-
-  countdown=setInterval(()=>{
-    count--;
-
-    if(count>0) {
-      $("reactionState").textContent="Starting in "+count;
-    } else {
-      clearInterval(countdown);
-      reactionStart=performance.now();
-      $("reactionState").textContent="Tap all 10 circles!";
-      $("startReaction").disabled=false;
-      $("startReaction").textContent="Restart Test";
-    }
-  },1000);
-}
-
-/* START */
-window.addEventListener("load",()=>{
-  setTimeout(initializeGoogleLogin,1000);
+ }, 300);
 });
 </script>
+
 </body>
 </html>
