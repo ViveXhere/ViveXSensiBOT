@@ -2,161 +2,425 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080808">
 <title>ViveX Sensi</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--red:#ff1744;--red2:#ff003c;--bg:#050505;--glass:rgba(255,255,255,.065)}
+:root {
+  --red:#ff2020;
+  --bg:#080808;
+  --panel:#121212;
+  --line:#451414;
+  --text:#f5eeee;
+  --muted:#aaa;
+}
+*{box-sizing:border-box}
 body{
-  min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:#fff;background:#050505;
-  overflow-x:hidden;
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:'Rajdhani',sans-serif;
+  background-image:radial-gradient(ellipse at top,#260707,#080808 60%);
 }
-body:before,body:after{content:"";position:fixed;border-radius:50%;filter:blur(90px);opacity:.35;pointer-events:none;z-index:-1}
-body:before{width:280px;height:280px;background:#ff003c;top:-100px;left:-90px}
-body:after{width:260px;height:260px;background:#8b001f;right:-90px;bottom:-80px}
-.page{min-height:100vh;display:none;padding:28px 18px 36px;position:relative}
-.page.active{display:flex;flex-direction:column}
-#home{justify-content:center;align-items:center;text-align:center}
-.logo{
-  width:88px;height:88px;border:1px solid rgba(255,23,68,.65);border-radius:28px;
-  display:grid;place-items:center;font-size:35px;font-weight:900;font-style:italic;
-  color:#fff;background:rgba(255,255,255,.04);box-shadow:0 0 30px rgba(255,0,60,.35),inset 0 0 24px rgba(255,0,60,.08);
-  margin-bottom:25px
+.hidden{display:none!important}
+button{font:inherit;cursor:pointer}
+.screen{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login-card{
+  width:min(100%,400px);padding:32px 22px;text-align:center;
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;
 }
-h1{font-size:42px;letter-spacing:-2px}
-h1 span{color:var(--red);text-shadow:0 0 18px rgba(255,23,68,.7)}
-.subtitle{color:#aaa;margin:10px 0 30px;font-size:15px}
-.glass{
- background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
- border:1px solid rgba(255,255,255,.11);border-radius:24px;
- box-shadow:0 18px 50px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.08);
- backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
+.brand{font:800 34px Orbitron}
+.brand span{color:var(--red)}
+.sub{font:600 11px Orbitron;letter-spacing:4px;margin:12px 0 25px}
+.muted{color:var(--muted)}
+#googleButton{display:flex;justify-content:center;margin:25px 0}
+.status{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.app{max-width:1050px;margin:auto;padding:15px}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;padding:15px;background:#100d0d;
+  border:1px solid var(--line);border-radius:12px;
 }
-.main-card{padding:28px;max-width:420px;width:100%}
-.btn{
- width:100%;border:0;border-radius:15px;padding:17px 20px;color:#fff;font-size:16px;font-weight:800;
- background:linear-gradient(135deg,#ff1744,#d50032);box-shadow:0 0 25px rgba(255,0,60,.32);
- cursor:pointer;transition:.2s
+.smallbrand{font:700 18px Orbitron}
+.smallbrand span{color:var(--red)}
+.user{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.nav{display:flex;gap:8px;overflow-x:auto;padding:15px 0}
+.nav button,.secondary,.primary{
+  padding:10px 16px;border-radius:8px;
+  border:1px solid var(--line);background:#151010;color:white;
+  font-weight:700;white-space:nowrap;
 }
-.btn:active{transform:scale(.98)}
-.top{max-width:720px;width:100%;margin:0 auto 22px}
-.back{display:inline-flex;align-items:center;gap:7px;color:#aaa;background:none;border:0;font-size:14px;padding:5px 0;cursor:pointer}
-.title{margin-top:18px;font-size:29px}.title span{color:var(--red)}
-.grid{max-width:720px;width:100%;margin:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.device{
- padding:20px 12px;text-align:center;cursor:pointer;transition:.2s;border-radius:18px;
- color:#ddd
+.nav button.active,.primary{background:var(--red);border-color:var(--red)}
+.hero,.panel{
+  padding:22px;background:#121010;
+  border:1px solid var(--line);border-radius:12px;margin-bottom:14px;
 }
-.device.selected{border-color:var(--red);box-shadow:0 0 24px rgba(255,0,60,.2),inset 0 0 20px rgba(255,0,60,.06);color:#fff}
-.device .icon{font-size:25px;margin-bottom:9px}.device b{font-size:14px}
-.done{max-width:720px;width:100%;margin:18px auto 0}
-.results{max-width:720px;width:100%;margin:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
-.result{padding:22px}
-.label{font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px}
-.value{font-size:27px;font-weight:900;margin-top:8px;color:#fff;text-shadow:0 0 14px rgba(255,23,68,.25)}
-.unit{font-size:12px;color:#888;margin-left:4px}
-.note{max-width:720px;width:100%;margin:18px auto 0;padding:18px;color:#aaa;font-size:12px;line-height:1.6}
-@media(max-width:480px){h1{font-size:38px}.grid,.results{grid-template-columns:1fr 1fr}.result{padding:18px}.value{font-size:23px}}
+.eyebrow{font:600 11px Orbitron;color:var(--red);letter-spacing:2px}
+h1,h2,h3{font-family:Orbitron}
+h1{font-size:clamp(22px,5vw,30px)}
+h2{font-size:17px}
+p{color:#bbb;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.badge{
+  display:inline-block;padding:6px 12px;border:1px solid #315b3d;
+  color:#70d995;border-radius:20px;font-size:13px
+}
+.price{font:700 26px Orbitron;color:var(--red)}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.circle-area{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:18px 0}
+.circle{
+  aspect-ratio:1;border-radius:50%;border:1px solid #552020;
+  background:#211111;color:white;font-weight:700
+}
+.circle.hit{background:#28643d;border-color:#62d58a}
+.footer{text-align:center;color:#666;padding:25px}
+.tool-button{width:100%;margin-top:10px}
+@media(max-width:600px){
+  .grid,.plans{grid-template-columns:1fr}
+  .topbar{align-items:flex-start;flex-direction:column}
+  .hero,.panel{padding:17px}
+}
 </style>
 </head>
+
 <body>
 
-<section id="home" class="page active">
-  <div class="logo">VX</div>
-  <h1>Vive<span>X</span> Sensi</h1>
-  <p class="subtitle">Find your device setup for Free Fire</p>
-  <div class="glass main-card">
-    <button class="btn" onclick="showPage('devices')">Get ViveX Sensi</button>
+<!-- LOGIN -->
+<section id="loginScreen" class="screen">
+  <div class="login-card">
+    <div class="brand">ViveX <span>Sensi</span></div>
+    <div class="sub">PRECISION • CONTROL</div>
+    <p class="muted">Sign in with your Google account</p>
+    <div id="googleButton"></div>
+    <div id="loginStatus" class="status">Loading Google Login...</div>
   </div>
 </section>
 
-<section id="devices" class="page">
-  <div class="top">
-    <button class="back" onclick="showPage('home')">← Back</button>
-    <h2 class="title">Select <span>Device</span></h2>
-  </div>
+<!-- MAIN WEBSITE -->
+<main id="appScreen" class="app hidden">
 
-  <div class="grid">
-    <div class="glass device" onclick="selectDevice(this,'Samsung')"><div class="icon">◉</div><b>Samsung</b></div>
-    <div class="glass device" onclick="selectDevice(this,'Xiaomi')"><div class="icon">◉</div><b>Xiaomi</b></div>
-    <div class="glass device" onclick="selectDevice(this,'Realme')"><div class="icon">◉</div><b>Realme</b></div>
-    <div class="glass device" onclick="selectDevice(this,'OnePlus')"><div class="icon">◉</div><b>OnePlus</b></div>
-    <div class="glass device" onclick="selectDevice(this,'Vivo')"><div class="icon">◉</div><b>Vivo</b></div>
-    <div class="glass device" onclick="selectDevice(this,'OPPO')"><div class="icon">◉</div><b>OPPO</b></div>
-    <div class="glass device" onclick="selectDevice(this,'iQOO')"><div class="icon">◉</div><b>iQOO</b></div>
-    <div class="glass device" onclick="selectDevice(this,'Motorola')"><div class="icon">◉</div><b>Motorola</b></div>
-    <div class="glass device" onclick="selectDevice(this,'POCO')"><div class="icon">◉</div><b>POCO</b></div>
-    <div class="glass device" onclick="selectDevice(this,'Infinix')"><div class="icon">◉</div><b>Infinix</b></div>
-  </div>
+  <header class="topbar">
+    <div class="smallbrand">ViveX <span>Sensi</span></div>
+    <div class="user">
+      <span id="userEmail"></span>
+      <button class="secondary" onclick="logout()">Logout</button>
+    </div>
+  </header>
 
-  <div class="done">
-    <button class="btn" onclick="finish()">Done</button>
-  </div>
-</section>
+  <nav class="nav">
+    <button class="active" onclick="openPage('home',this)">Home</button>
+    <button onclick="openPage('bot',this)">Sensi BOT</button>
+    <button onclick="openPage('tricks',this)">Tricks</button>
+    <button onclick="openPage('settings',this)">Settings</button>
+  </nav>
 
-<section id="result" class="page">
-  <div class="top">
-    <button class="back" onclick="showPage('devices')">← Change Device</button>
-    <h2 class="title">ViveX <span>Sensi</span></h2>
-    <p class="subtitle" id="selectedText">Recommended setup</p>
-  </div>
+  <!-- HOME -->
+  <section id="homePage" class="page">
+    <div class="hero">
+      <div class="eyebrow">MEMBER DASHBOARD</div>
+      <h1>Welcome to ViveX Sensi</h1>
+      <p>Your control centre for sensitivity guides, practice tools and updates.</p>
+    </div>
 
-  <div class="results">
-    <div class="glass result"><div class="label">General</div><div class="value">195</div></div>
-    <div class="glass result"><div class="label">Red Dot</div><div class="value">190</div></div>
-    <div class="glass result"><div class="label">2× Scope</div><div class="value">185</div></div>
-    <div class="glass result"><div class="label">4× Scope</div><div class="value">175</div></div>
-    <div class="glass result"><div class="label">Sniper Scope</div><div class="value">95</div></div>
-    <div class="glass result"><div class="label">Free Look</div><div class="value">180</div></div>
-    <div class="glass result"><div class="label">Fire Button</div><div class="value">52<span class="unit">%</span></div></div>
-    <div class="glass result"><div class="label">Recommended DPI</div><div class="value" id="dpi">560</div></div>
-  </div>
+    <div class="grid">
+      <div class="panel">
+        <div class="eyebrow">MEMBERSHIP</div>
+        <h2>Access Status</h2>
+        <div id="membershipBadge" class="badge">Checking...</div>
+        <p id="membershipInfo">Verifying membership...</p>
+      </div>
 
-  <div class="glass note">
-    These are starting-point settings. Sensitivity can vary with device model, screen refresh rate and personal aim preference.
+      <div class="panel">
+        <div class="eyebrow">QUICK ACCESS</div>
+        <h2>Performance Lab</h2>
+        <p>Practice reaction speed and explore training tools.</p>
+        <button class="primary" onclick="openPage('settings')">Open Settings</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOT -->
+  <section id="botPage" class="page hidden">
+    <div class="hero">
+      <div class="eyebrow">SENSI BOT</div>
+      <h1>Smart Sensi Generator</h1>
+      <p>Personalized sensitivity suggestions are being prepared.</p>
+    </div>
+    <div class="panel">
+      <h2>Coming Soon</h2>
+      <p>The generator will be connected in a future update.</p>
+    </div>
+  </section>
+
+  <!-- TRICKS -->
+  <section id="tricksPage" class="page hidden">
+    <div class="hero">
+      <div class="eyebrow">TIPS & GUIDES</div>
+      <h1>Tricks</h1>
+      <p>Helpful guides and feature updates.</p>
+    </div>
+    <div class="panel">
+      <h2>In-Game Tricks</h2>
+      <p>New tricks are being prepared.</p>
+      <button class="secondary" disabled>Coming Soon</button>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settingsPage" class="page hidden">
+    <div class="hero">
+      <div class="eyebrow">SETTINGS</div>
+      <h1>Account & Performance</h1>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Account</h2>
+        <p id="accountEmail"></p>
+        <div class="badge">Access Verified</div>
+        <button class="secondary tool-button" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="panel">
+        <h2>Performance Lab</h2>
+        <p>Tap all 10 circles after the countdown.</p>
+        <div id="reactionState">Ready when you are</div>
+        <div id="reactionTime" class="price">--</div>
+        <div id="circleArea" class="circle-area"></div>
+        <button id="startReaction" class="primary tool-button" onclick="startReaction()">Start 3-second test</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">ViveX Sensi • Version 1.0</div>
+</main>
+
+<!-- MEMBERSHIP REQUIRED -->
+<section id="lockedScreen" class="screen hidden">
+  <div class="login-card">
+    <div class="brand">ViveX <span>Sensi</span></div>
+    <h2>Membership Required</h2>
+    <p class="muted">No active membership found for your account.</p>
+
+    <div class="plans">
+      <div class="panel">
+        <h3>MONTHLY</h3>
+        <div class="price">₹49</div>
+        <p>30 Days</p>
+      </div>
+      <div class="panel">
+        <h3>LIFETIME</h3>
+        <div class="price">₹99</div>
+        <p>Lifetime Access</p>
+      </div>
+    </div>
+
+    <p>Payment portal is being prepared. Do not pay until the official payment page is available.</p>
+    <p id="lockedStatus" class="status"></p>
+    <button class="secondary" onclick="logout()">Logout</button>
   </div>
 </section>
 
 <script>
-let selected='';
+/* CONFIGURATION */
+const GOOGLE_CLIENT_ID = "830557350336-3gt8c2943cjogo8a74msohnosjk4d3v9.apps.googleusercontent.com";
 
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxCCQWS8ADq-fDmTAqtbvGcAXWe8BZbqBroCwslkCW6yx4398KgHC4pSYLK6bZnszLPZg/exec";
+
+let idToken = "";
+let userEmail = "";
+let reactionStart = 0;
+let remaining = 0;
+let countdown = null;
+
+const $ = id => document.getElementById(id);
+
+/* BACKEND */
+async function callBackend(action) {
+  const response = await fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({action,idToken})
+  });
+
+  if(!response.ok) throw new Error("Backend HTTP error");
+  return response.json();
 }
 
-function selectDevice(el,name){
-  document.querySelectorAll('.device').forEach(d=>d.classList.remove('selected'));
-  el.classList.add('selected');
-  selected=name;
-}
-
-function finish(){
-  if(!selected){
-    alert('Please select a device first.');
+/* GOOGLE LOGIN */
+function initializeGoogleLogin() {
+  if(!window.google?.accounts?.id) {
+    $("loginStatus").textContent="Google Login is loading. Refresh the page.";
     return;
   }
 
-  document.getElementById('selectedText').textContent='Optimized setup • '+selected;
+  if(GOOGLE_CLIENT_ID.startsWith("YOUR_")) {
+    $("loginStatus").textContent="Add your OAuth Web Client ID in the code.";
+    return;
+  }
 
-  const dpiMap={
-    Samsung:560,
-    Xiaomi:550,
-    Realme:560,
-    OnePlus:570,
-    Vivo:540,
-    OPPO:540,
-    iQOO:570,
-    Motorola:520,
-    POCO:550,
-    Infinix:500
-  };
+  google.accounts.id.initialize({
+    client_id:GOOGLE_CLIENT_ID,
+    callback:handleLogin
+  });
 
-  document.getElementById('dpi').textContent=dpiMap[selected]||550;
-  showPage('result');
+  google.accounts.id.renderButton($("googleButton"),{
+    theme:"filled_black",
+    size:"large",
+    shape:"rectangular",
+    text:"signin_with",
+    width:240
+  });
+
+  $("loginStatus").textContent="Sign in with Google to continue.";
 }
-</script>
 
+async function handleLogin(response) {
+  idToken=response.credential;
+  $("loginStatus").textContent="Checking membership...";
+
+  try {
+    const result=await callBackend("membership");
+
+    if(!result || !result.success) {
+      showLocked(result?.message || "Membership verification failed.");
+      return;
+    }
+
+    userEmail=result.email || "";
+
+    if(result.active) {
+      showApp(result);
+    } else {
+      showLocked("No active membership found for "+userEmail);
+    }
+
+  } catch(error) {
+    $("loginStatus").textContent="Backend error: "+error.message;
+  }
+}
+
+/* SCREENS */
+function showApp(membership) {
+  $("loginScreen").classList.add("hidden");
+  $("lockedScreen").classList.add("hidden");
+  $("appScreen").classList.remove("hidden");
+
+  $("userEmail").textContent=userEmail;
+  $("accountEmail").textContent=userEmail;
+
+  $("membershipBadge").textContent=
+    membership.plan==="Lifetime"?"LIFETIME ACTIVE":"ACTIVE";
+
+  $("membershipInfo").textContent=
+    membership.plan==="Lifetime"
+    ?"Your lifetime membership is active."
+    :"Your membership is active. Expiry: "+(membership.expiry || "Not provided");
+}
+
+function showLocked(message) {
+  $("loginScreen").classList.add("hidden");
+  $("appScreen").classList.add("hidden");
+  $("lockedScreen").classList.remove("hidden");
+  $("lockedStatus").textContent=message || "";
+}
+
+function logout() {
+  idToken="";
+  userEmail="";
+
+  if(window.google?.accounts?.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+
+  $("appScreen").classList.add("hidden");
+  $("lockedScreen").classList.add("hidden");
+  $("loginScreen").classList.remove("hidden");
+  $("loginStatus").textContent="Signed out.";
+}
+
+/* NAVIGATION */
+function openPage(page,button) {
+  document.querySelectorAll(".page").forEach(section=>{
+    section.classList.add("hidden");
+  });
+
+  $(page+"Page").classList.remove("hidden");
+
+  document.querySelectorAll(".nav button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+
+  if(button) button.classList.add("active");
+}
+
+/* REACTION TEST */
+function createCircles() {
+  $("circleArea").innerHTML="";
+
+  for(let i=0;i<10;i++) {
+    const circle=document.createElement("button");
+    circle.className="circle";
+    circle.textContent="TAP";
+    circle.type="button";
+    circle.onclick=()=>hitCircle(circle);
+    $("circleArea").appendChild(circle);
+  }
+}
+
+function hitCircle(circle) {
+  if(!reactionStart || circle.classList.contains("hit")) return;
+
+  circle.classList.add("hit");
+  circle.textContent="✓";
+  remaining--;
+
+  if(remaining===0) {
+    const elapsed=(performance.now()-reactionStart)/1000;
+
+    $("reactionTime").textContent=elapsed.toFixed(2)+"s";
+    $("reactionState").textContent="Test completed!";
+    reactionStart=0;
+    $("startReaction").disabled=false;
+    $("startReaction").textContent="Try Again";
+  }
+}
+
+function startReaction() {
+  clearInterval(countdown);
+  reactionStart=0;
+  remaining=10;
+
+  $("reactionTime").textContent="--";
+  $("startReaction").disabled=true;
+  createCircles();
+
+  let count=3;
+  $("reactionState").textContent="Starting in "+count;
+
+  countdown=setInterval(()=>{
+    count--;
+
+    if(count>0) {
+      $("reactionState").textContent="Starting in "+count;
+    } else {
+      clearInterval(countdown);
+      reactionStart=performance.now();
+      $("reactionState").textContent="Tap all 10 circles!";
+      $("startReaction").disabled=false;
+      $("startReaction").textContent="Restart Test";
+    }
+  },1000);
+}
+
+/* START */
+window.addEventListener("load",()=>{
+  setTimeout(initializeGoogleLogin,1000);
+});
+</script>
 </body>
-  </html>
+</html>
